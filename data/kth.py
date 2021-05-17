@@ -12,13 +12,12 @@ class KTH(object):
         self.image_size = image_size 
         self.classes = ['boxing', 'handclapping', 'handwaving', 'jogging', 'running', 'walking']
 
-        self.dirs = os.listdir(self.data_root)
+        self.dirs = os.listdir(self.path)
 
         self.seed_set = False
 
     def get_sequence(self):
-        path = '../data/kth'
-        list_f = [x for x in os.listdir(path)]
+        list_f = [x for x in os.listdir(self.path)]
 
         rand_folder = random.choice(list_f)
         path_to_file = path + '/' + rand_folder
