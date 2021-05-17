@@ -33,22 +33,22 @@ class KTH(object):
         while vidcap.isOpened():
             frame_id = vidcap.get(1)  # current frame number
             ret, frame = vidcap.read()
-            if not ret or len(stacked_frames) > (time_step - 1):
+            if not ret or len(stacked_frames) > (self.seq_len - 1):
                 break
             frame = frame / 255.0
             if rand_folder == 'running' or rand_folder == 'walking' or rand_folder == 'jogging':
                 if frame_id % 1 == 0 and frame_id > 5:
-                    resized_frame = cv2.resize(frame, size=[height, width], interpolation='INTER_NEAREST')
+                    resized_frame = cv2.resize(frame, size=[self.image_size, self.image_size], interpolation='INTER_NEAREST')
             elif n_frames < 350:
                 if frame_id % 1 == 0 and frame_id > 5:
-                    resized_frame = cv2.resize(frame, size=[height, width], interpolation='INTER_NEAREST')
+                    resized_frame = cv2.resize(frame, size=[self.image_size, self.image_size], interpolation='INTER_NEAREST')
             else:
                 if frame_id % 1 == 0 and frame_id > 10:
-                    resized_frame = cv2.resize(frame, size=[height, width], interpolation='INTER_NEAREST')
+                    resized_frame = cv2.resize(frame, size=[self.image_size, self.image_size], interpolation='INTER_NEAREST')
 
             stacked_frames.append(resized_frame)
 
-        stacked_frames = np.reshape(stacked_frames, newshape=(time_step, height, width, 3))
+        stacked_frames = np.reshape(stacked_frames, newshape=(self.seq_len, self.image_size, self.image_size, 3))
         return stacked_frames
 
     def __getitem__(self, index):
