@@ -21,9 +21,9 @@ class MovingMNIST(object):
         if not self.seed_is_set:
             self.seed_is_set = True
             np.random.seed(seed)
-          
+
     def __len__(self):
-        return self.N
+        return 20
 
     def __getitem__(self, index):
         self.set_seed(index)
