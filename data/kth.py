@@ -3,6 +3,7 @@ import os
 import numpy as np
 import torch
 from scipy import misc
+import cv2
 
 
 class KTH(object):
