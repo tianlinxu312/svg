@@ -2,6 +2,15 @@ import numpy as np
 from torchvision import datasets, transforms
 
 
+class MyDataset(IterableDataset):
+
+    def __init__(self, data):
+        self.data = data
+
+    def __iter__(self):
+        return iter(self.data)
+
+
 class MovingMNIST(object):
     
     """Data Handler that creates Bouncing MNIST dataset on the fly."""
@@ -16,6 +25,9 @@ class MovingMNIST(object):
         self.deterministic = deterministic
         self.seed_is_set = False # multi threaded loading
         self.channels = 1
+        self.sample_size = 8000
+        self.counter = 0
+        self.dataset = None
 
     def set_seed(self, seed):
         if not self.seed_is_set:
@@ -25,11 +37,13 @@ class MovingMNIST(object):
     def __len__(self):
         return 20
 
-    def __getitem__(self, index):
-        self.set_seed(index)
+    def load_dataset(self):
         training_data = np.load(self.path) / 255.0
         training_data = np.transpose(training_data, (1, 0, 2, 3))
-        x = np.transpose(training_data, (0, 2, 1, 3))
-        return x
+        self.dataset = training_data
+
+    def __getitem__(self, index):
+        self.set_seed(index)
+        return self.dataset[self.counter / self.sample_size]
 
 
