@@ -149,7 +149,7 @@ mse_criterion.cuda()
 train_data = utils.load_dataset(opt)
 
 train_loader = DataLoader(train_data,
-                          num_workers=0,
+                          num_workers=5,
                           batch_size=opt.batch_size,
                           shuffle=True,
                           drop_last=True,
@@ -161,13 +161,6 @@ def get_training_batch():
             batch = utils.normalize_data(opt, dtype, sequence)
             yield batch
 training_batch_generator = get_training_batch()
-
-def get_testing_batch():
-    while True:
-        for sequence in test_loader:
-            batch = utils.normalize_data(opt, dtype, sequence)
-            yield batch 
-testing_batch_generator = get_testing_batch()
 
 # --------- plotting funtions ------------------------------------
 def plot(x, epoch):
