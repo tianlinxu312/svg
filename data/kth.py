@@ -20,7 +20,7 @@ class KTH(object):
         list_f = [x for x in os.listdir(self.path)]
 
         rand_folder = random.choice(list_f)
-        path_to_file = path + '/' + rand_folder
+        path_to_file = self.path + '/' + rand_folder
         file_name = random.choice(os.listdir(path_to_file))
         path_to_video = path_to_file + '/' + file_name
         vidcap = cv2.VideoCapture(path_to_video)
