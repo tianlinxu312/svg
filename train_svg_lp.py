@@ -20,9 +20,9 @@ parser.add_argument('--model_dir', default='', help='base directory to save logs
 parser.add_argument('--name', default='', help='identifier for directory')
 parser.add_argument('--data_root', default='data', help='root directory for data')
 parser.add_argument('--optimizer', default='adam', help='optimizer to train with')
-parser.add_argument('--niter', type=int, default=300, help='number of epochs to train for')
+parser.add_argument('--niter', type=int, default=100, help='number of epochs to train for')
 parser.add_argument('--seed', default=1, type=int, help='manual seed')
-parser.add_argument('--epoch_size', type=int, default=600, help='epoch size')
+parser.add_argument('--epoch_size', type=int, default=1000, help='epoch size')
 parser.add_argument('--image_width', type=int, default=64, help='the height / width of the input image to network')
 parser.add_argument('--channels', default=1, type=int)
 parser.add_argument('--dataset', default='mmnist', help='dataset to train with')
@@ -146,7 +146,7 @@ decoder.cuda()
 mse_criterion.cuda()
 
 # --------- load a dataset ------------------------------------
-train_data, test_data = utils.load_dataset(opt)
+train_data = utils.load_dataset(opt)
 
 train_loader = DataLoader(train_data,
                           num_workers=opt.data_threads,
