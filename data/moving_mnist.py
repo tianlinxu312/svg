@@ -1,16 +1,6 @@
 import numpy as np
 from torchvision import datasets, transforms
 
-
-class MyDataset(IterableDataset):
-
-    def __init__(self, data):
-        self.data = data
-
-    def __iter__(self):
-        return iter(self.data)
-
-
 class MovingMNIST(object):
     
     """Data Handler that creates Bouncing MNIST dataset on the fly."""
