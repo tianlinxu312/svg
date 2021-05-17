@@ -3,7 +3,6 @@ import os
 import numpy as np
 import torch
 from scipy import misc
-from torch.utils.serialization import load_lua
 
 
 class KTH(object):
