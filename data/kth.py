@@ -19,7 +19,6 @@ class KTH(object):
 
     def get_sequence(self):
         list_f = [x for x in os.listdir(self.path)]
-
         rand_folder = random.choice(list_f)
         path_to_file = self.path + '/' + rand_folder
         file_name = random.choice(os.listdir(path_to_file))
@@ -38,15 +37,15 @@ class KTH(object):
             frame = frame / 255.0
             if rand_folder == 'running' or rand_folder == 'walking' or rand_folder == 'jogging':
                 if frame_id % 1 == 0 and frame_id > 5:
-                    resized_frame = cv2.resize(frame, size=[self.image_size, self.image_size], interpolation='INTER_NEAREST')
+                    frame = cv2.resize(frame, size=[self.image_size, self.image_size], interpolation='INTER_NEAREST')
             elif n_frames < 350:
                 if frame_id % 1 == 0 and frame_id > 5:
-                    resized_frame = cv2.resize(frame, size=[self.image_size, self.image_size], interpolation='INTER_NEAREST')
+                    frame = cv2.resize(frame, size=[self.image_size, self.image_size], interpolation='INTER_NEAREST')
             else:
                 if frame_id % 1 == 0 and frame_id > 10:
-                    resized_frame = cv2.resize(frame, size=[self.image_size, self.image_size], interpolation='INTER_NEAREST')
+                    frame = cv2.resize(frame, size=[self.image_size, self.image_size], interpolation='INTER_NEAREST')
 
-            stacked_frames.append(resized_frame)
+            stacked_frames.append(frame)
 
         stacked_frames = np.reshape(stacked_frames, newshape=(self.seq_len, self.image_size, self.image_size, 3))
         return stacked_frames
