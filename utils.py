@@ -51,7 +51,12 @@ def sequence_input(seq, dtype):
 
 
 def normalize_data(opt, dtype, sequence):
-    sequence.transpose_(0, 1)
+    if opt.dataset == 'mmnist' or opt.dataset == 'kth' or opt.dataset == 'bair':
+        sequence.transpose_(0, 1)
+        sequence.transpose_(3, 4).transpose_(2, 3)
+    else:
+        sequence.transpose_(0, 1)
+
     return sequence_input(sequence, dtype)
 
 def is_sequence(arg):
