@@ -25,7 +25,7 @@ parser.add_argument('--seed', default=1, type=int, help='manual seed')
 parser.add_argument('--epoch_size', type=int, default=600, help='epoch size')
 parser.add_argument('--image_width', type=int, default=64, help='the height / width of the input image to network')
 parser.add_argument('--channels', default=1, type=int)
-parser.add_argument('--dataset', default='smmnist', help='dataset to train with')
+parser.add_argument('--dataset', default='mmnist', help='dataset to train with')
 parser.add_argument('--n_past', type=int, default=5, help='number of frames to condition on')
 parser.add_argument('--n_future', type=int, default=10, help='number of frames to predict during training')
 parser.add_argument('--n_eval', type=int, default=30, help='number of frames to predict during eval')
@@ -154,12 +154,6 @@ train_loader = DataLoader(train_data,
                           shuffle=True,
                           drop_last=True,
                           pin_memory=True)
-test_loader = DataLoader(test_data,
-                         num_workers=opt.data_threads,
-                         batch_size=opt.batch_size,
-                         shuffle=True,
-                         drop_last=True,
-                         pin_memory=True)
 
 def get_training_batch():
     while True:

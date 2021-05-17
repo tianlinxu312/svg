@@ -15,32 +15,22 @@ from skimage.measure import compare_ssim as ssim_metric
 from scipy import signal
 from scipy import ndimage
 from PIL import Image, ImageDraw
-
-
 from torchvision import datasets, transforms
 from torch.autograd import Variable
 import imageio
 
-
 hostname = socket.gethostname()
 
+
 def load_dataset(opt):
-    if opt.dataset == 'smmnist':
+    if opt.dataset == 'mmnist':
         from data.moving_mnist import MovingMNIST
         train_data = MovingMNIST(
                 train=True,
                 data_root=opt.data_root,
                 seq_len=opt.n_past+opt.n_future,
                 image_size=opt.image_width,
-                deterministic=False,
-                num_digits=opt.num_digits)
-        test_data = MovingMNIST(
-                train=False,
-                data_root=opt.data_root,
-                seq_len=opt.n_eval,
-                image_size=opt.image_width,
-                deterministic=False,
-                num_digits=opt.num_digits)
+                deterministic=False)
     elif opt.dataset == 'bair':
         from data.bair import RobotPush 
         train_data = RobotPush(
@@ -48,28 +38,17 @@ def load_dataset(opt):
                 train=True,
                 seq_len=opt.n_past+opt.n_future,
                 image_size=opt.image_width)
-        test_data = RobotPush(
-                data_root=opt.data_root,
-                train=False,
-                seq_len=opt.n_eval,
-                image_size=opt.image_width)
     elif opt.dataset == 'kth':
         from data.kth import KTH 
-        train_data = KTH(
-                train=True, 
-                data_root=opt.data_root,
-                seq_len=opt.n_past+opt.n_future, 
-                image_size=opt.image_width)
-        test_data = KTH(
-                train=False, 
-                data_root=opt.data_root,
-                seq_len=opt.n_eval, 
-                image_size=opt.image_width)
+        train_data = KTH(train=True, data_root=opt.data_root,seq_len=opt.n_past+opt.n_future,
+                         image_size=opt.image_width)
     
-    return train_data, test_data
+    return train_data
+
 
 def sequence_input(seq, dtype):
     return [Variable(x.type(dtype)) for x in seq]
+
 
 def normalize_data(opt, dtype, sequence):
     if opt.dataset == 'smmnist' or opt.dataset == 'kth' or opt.dataset == 'bair' :
