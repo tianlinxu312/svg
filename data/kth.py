@@ -2,6 +2,7 @@ import random
 import os
 import numpy as np
 import cv2
+import torch
 
 
 class KTH(object):
