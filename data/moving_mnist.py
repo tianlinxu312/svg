@@ -7,7 +7,7 @@ class MovingMNIST(object):
     """Data Handler that creates Bouncing MNIST dataset on the fly."""
 
     def __init__(self, train, data_root='../data/mmnist/train/', seq_len=20, num_digits=2, image_size=64, deterministic=True):
-        path = data_root
+        self.path = data_root
         self.seq_len = seq_len
         self.num_digits = num_digits  
         self.image_size = image_size 
@@ -27,8 +27,7 @@ class MovingMNIST(object):
 
     def __getitem__(self, index):
         self.set_seed(index)
-        image_size = self.image_size
-        training_data = np.load(path) / 255.0
+        training_data = np.load(self.path) / 255.0
         training_data = np.transpose(training_data, (1, 0, 2, 3))
         x = np.transpose(training_data, (0, 2, 1, 3))
         return x
