@@ -26,6 +26,9 @@ class MovingMNIST(object):
             self.seed_is_set = True
             np.random.seed(seed)
 
+    def __len__(self):
+        return self.seq_len
+
     def load_dataset(self):
         training_data = np.load(self.path) / 255.0
         training_data = np.transpose(training_data, (1, 0, 2, 3))
