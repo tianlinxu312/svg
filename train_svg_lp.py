@@ -155,12 +155,16 @@ train_loader = DataLoader(train_data,
                           drop_last=True,
                           pin_memory=True)
 
+
 def get_training_batch():
     while True:
         for sequence in train_loader:
             batch = utils.normalize_data(opt, dtype, sequence)
             yield batch
+
+
 training_batch_generator = get_training_batch()
+
 
 # --------- plotting funtions ------------------------------------
 def plot(x, epoch):
@@ -342,7 +346,7 @@ for epoch in range(opt.niter):
     utils.clear_progressbar()
 
     print('[%02d] mse loss: %.5f | kld loss: %.5f (%d)' % (epoch, epoch_mse/opt.epoch_size, epoch_kld/opt.epoch_size, epoch*opt.epoch_size*opt.batch_size))
-
+    '''
     # plot some stuff
     frame_predictor.eval()
     #encoder.eval()
@@ -353,6 +357,7 @@ for epoch in range(opt.niter):
     x = next(testing_batch_generator)
     plot(x, epoch)
     plot_rec(x, epoch)
+    '''
 
     # save the model
     torch.save({

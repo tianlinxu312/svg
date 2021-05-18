@@ -74,7 +74,7 @@ class DataReader(object):
         dataset = dataset.interleave(tf.data.TFRecordDataset, cycle_length=4, block_length=16)
         return dataset
 
-    def provide_dataset(self, batch_size):
+    def provide_dataset(self):
         """Instantiates the ops used to read and parse the data into tensors."""
         def read_tfrecord(serialized_example):
             feature_map = {'frames': tf.io.FixedLenFeature(shape=self._dataset_info.sequence_size, dtype=tf.string)}
@@ -84,7 +84,6 @@ class DataReader(object):
 
         dataset = self.get_dataset_from_path()
         dataset = dataset.map(read_tfrecord, num_parallel_calls=4)
-        dataset = dataset.batch(batch_size)
         return dataset
 
     def _preprocess_frames(self, example):

@@ -40,9 +40,13 @@ def load_dataset(opt):
                 image_size=opt.image_width)
     elif opt.dataset == 'kth':
         from data.kth import KTH 
-        train_data = KTH(train=True, data_root=opt.data_root,seq_len=opt.n_past+opt.n_future,
+        train_data = KTH(train=True, data_root=opt.data_root, seq_len=opt.n_past+opt.n_future,
                          image_size=opt.image_width)
-    
+    elif opt.dataset == 'mazes':
+        from data.mazes import DataReader
+        data_reader = DataReader(dataset=opt.dataset, time_steps=opt.n_past+opt.n_future,
+                                 root=opt.data_root, custom_frame_size=opt.image_width)
+        train_data = data_reader.provide_dataset()
     return train_data
 
 
