@@ -37,13 +37,13 @@ class KTH(object):
             frame = frame / 255.0
             if rand_folder == 'running' or rand_folder == 'walking' or rand_folder == 'jogging':
                 if frame_id % 1 == 0 and frame_id > 5:
-                    frame = cv2.resize(frame, dsize=[self.image_size, self.image_size], interpolation='INTER_NEAREST')
+                    frame = cv2.resize(frame, dsize=(self.image_size, self.image_size), interpolation='INTER_NEAREST')
             elif n_frames < 350:
                 if frame_id % 1 == 0 and frame_id > 5:
-                    frame = cv2.resize(frame, dsize=[self.image_size, self.image_size], interpolation='INTER_NEAREST')
+                    frame = cv2.resize(frame, dsize=(self.image_size, self.image_size), interpolation='INTER_NEAREST')
             else:
                 if frame_id % 1 == 0 and frame_id > 10:
-                    frame = cv2.resize(frame, dsize=[self.image_size, self.image_size], interpolation='INTER_NEAREST')
+                    frame = cv2.resize(frame, dsize=(self.image_size, self.image_size), interpolation='INTER_NEAREST')
 
             stacked_frames.append(frame)
 
