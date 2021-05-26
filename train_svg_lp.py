@@ -67,7 +67,12 @@ print("Random Seed: ", opt.seed)
 random.seed(opt.seed)
 torch.manual_seed(opt.seed)
 torch.cuda.manual_seed_all(opt.seed)
-dtype = torch.cuda.FloatTensor
+if torch.cuda.is_available():
+    use_cuda = True
+    dtype = torch.cuda.FloatTensor
+else:
+    use_cuda = False
+    dtype = torch.FloatTensor
 
 
 # ---------------- load the models  ----------------
