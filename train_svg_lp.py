@@ -25,7 +25,7 @@ parser.add_argument('--seed', default=1, type=int, help='manual seed')
 parser.add_argument('--epoch_size', type=int, default=1000, help='epoch size')
 parser.add_argument('--image_width', type=int, default=64, help='the height / width of the input image to network')
 parser.add_argument('--channels', default=1, type=int)
-parser.add_argument('--dataset', default='mmnist', help='dataset to train with')
+parser.add_argument('--dataset', default='mazes', help='dataset to train with')
 parser.add_argument('--n_past', type=int, default=5, help='number of frames to condition on')
 parser.add_argument('--n_future', type=int, default=10, help='number of frames to predict during training')
 parser.add_argument('--n_eval', type=int, default=30, help='number of frames to predict during eval')
@@ -42,7 +42,6 @@ parser.add_argument('--num_digits', type=int, default=2, help='number of digits 
 parser.add_argument('--last_frame_skip', action='store_true', help='if true, skip connections go between frame t and frame t+t rather than last ground truth frame')
 
 
-
 opt = parser.parse_args()
 if opt.model_dir != '':
     # load model and continue training from checkpoint
@@ -54,7 +53,8 @@ if opt.model_dir != '':
     opt.model_dir = model_dir
     opt.log_dir = '%s/continued' % opt.log_dir
 else:
-    name = 'model=%s%dx%d-rnn_size=%d-predictor-posterior-prior-rnn_layers=%d-%d-%d-n_past=%d-n_future=%d-lr=%.4f-g_dim=%d-z_dim=%d-last_frame_skip=%s-beta=%.7f%s' % (opt.model, opt.image_width, opt.image_width, opt.rnn_size, opt.predictor_rnn_layers, opt.posterior_rnn_layers, opt.prior_rnn_layers, opt.n_past, opt.n_future, opt.lr, opt.g_dim, opt.z_dim, opt.last_frame_skip, opt.beta, opt.name)
+    name = 'model=%s%dx%d-rnn_size=%d-predictor-posterior-prior-rnn_layers=%d-%d-%d-n_past=%d-n_future=%d-lr=%.4f-g_dim=%d-z_dim=%d-last_frame_skip=%s-beta=%.7f%s'\
+           % (opt.model, opt.image_width, opt.image_width, opt.rnn_size, opt.predictor_rnn_layers, opt.posterior_rnn_layers, opt.prior_rnn_layers, opt.n_past, opt.n_future, opt.lr, opt.g_dim, opt.z_dim, opt.last_frame_skip, opt.beta, opt.name)
     if opt.dataset == 'smmnist':
         opt.log_dir = '%s/%s-%d/%s' % (opt.log_dir, opt.dataset, opt.num_digits, name)
     else:
@@ -149,7 +149,7 @@ mse_criterion.cuda()
 train_data = utils.load_dataset(opt)
 
 train_loader = DataLoader(train_data,
-                          num_workers=5,
+                          num_workers=0,
                           batch_size=opt.batch_size,
                           shuffle=True,
                           drop_last=True,

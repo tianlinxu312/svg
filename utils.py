@@ -10,8 +10,8 @@ import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import functools
-from skimage.measure import compare_psnr as psnr_metric
-from skimage.measure import compare_ssim as ssim_metric
+#from skimage.measure import compare_psnr as psnr_metric
+#from skimage.measure import compare_ssim as ssim_metric
 from scipy import signal
 from scipy import ndimage
 from PIL import Image, ImageDraw
@@ -20,6 +20,12 @@ from torch.autograd import Variable
 import imageio
 
 hostname = socket.gethostname()
+if torch.cuda.is_available():
+    use_cuda = True
+    dtype = torch.cuda.FloatTensor
+else:
+    use_cuda = False
+    dtype = torch.FloatTensor
 
 
 def load_dataset(opt):
@@ -43,10 +49,8 @@ def load_dataset(opt):
         train_data = KTH(train=True, data_root=opt.data_root, seq_len=opt.n_past+opt.n_future,
                          image_size=opt.image_width)
     elif opt.dataset == 'mazes':
-        from data.mazes import DataReader
-        data_reader = DataReader(dataset=opt.dataset, time_steps=opt.n_past+opt.n_future,
-                                 root=opt.data_root, custom_frame_size=opt.image_width)
-        train_data = data_reader.provide_dataset()
+        from data.mazes import Mazes
+        train_data = Mazes(data_root='../data/mazes/np_mazes_train.npy')
     return train_data
 
 
@@ -55,7 +59,7 @@ def sequence_input(seq, dtype):
 
 
 def normalize_data(opt, dtype, sequence):
-    if opt.dataset == 'mmnist' or opt.dataset == 'kth' or opt.dataset == 'bair':
+    if opt.dataset == 'mmnist' or opt.dataset == 'kth' or opt.dataset == 'mazes':
         sequence.transpose_(0, 1)
         sequence.transpose_(3, 4).transpose_(2, 3)
     else:
@@ -69,6 +73,7 @@ def is_sequence(arg):
             not hasattr(arg, "dot") and
             (hasattr(arg, "__getitem__") or
             hasattr(arg, "__iter__")))
+
 
 def image_tensor(inputs, padding=1):
     # assert is_sequence(inputs)
