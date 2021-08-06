@@ -56,15 +56,13 @@ pickle.Unpickler = partial(pickle.Unpickler, encoding="latin1")
 
 tmp = torch.load(opt.model_path, map_location=lambda storage, loc: storage, pickle_module=pickle)
 
-encoder = torch.load("pretrained_models/svglp_bair_enc_model.pth")
-decoder = torch.load("pretrained_models/svglp_bair_dec_model.pth")
+# encoder = torch.load("pretrained_models/svglp_bair_enc_model.pth")
+# decoder = torch.load("pretrained_models/svglp_bair_dec_model.pth")
 
 
-'''
 opt.g_dim = tmp['opt'].g_dim
 opt.z_dim = tmp['opt'].z_dim
 opt.num_digits = tmp['opt'].num_digits
-
 
 encoder_ckpt = torch.load("pretrained_models/svglp_bair_enc_model.pth")
 decoder_ckpt = torch.load("pretrained_models/svglp_bair_dec_model.pth")
@@ -75,7 +73,6 @@ decoder = vgg.decoder(opt.g_dim, 3)
 encoder.load_state_dict(encoder_ckpt)
 decoder.load_state_dict(decoder_ckpt)
 
-'''
 
 frame_predictor = tmp['frame_predictor']
 posterior = tmp['posterior']
