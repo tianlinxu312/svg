@@ -56,10 +56,9 @@ pickle.Unpickler = partial(pickle.Unpickler, encoding="latin1")
 
 tmp = torch.load(opt.model_path, map_location=lambda storage, loc: storage, pickle_module=pickle)
 
-encoder = tmp['encoder']
-decoder = tmp['decoder']
 
-# tmp = torch.load(opt.model_path)
+encoder = torch.load("pretrained_models/svglp_bair_enc.pth")
+decoder = torch.load("pretrained_models/svglp_bair_dec.pth")
 frame_predictor = tmp['frame_predictor']
 posterior = tmp['posterior']
 prior = tmp['prior']
@@ -69,6 +68,7 @@ posterior.eval()
 # encoder = tmp['encoder']
 # decoder = tmp['decoder']
 
+'''
 try:
     torch.save(encoder.state_dict(), "pretrained_models/svglp_bair_enc.pth")
     torch.save(decoder.state_dict(), "pretrained_models/svglp_bair_dec.pth")
@@ -76,6 +76,8 @@ except Exception as e:
     print(e)
     torch.save(encoder.module.features.state_dict(), "pretrained_models/svglp_bair_enc.pth")
     torch.save(decoder.state_dict(), "pretrained_models/svglp_bair_dec.pth")
+'''
+
 
 '''
 for i, (name, module) in enumerate(encoder._modules.items()):
