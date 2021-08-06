@@ -13,7 +13,7 @@ import numpy as np
 from scipy.ndimage.filters import gaussian_filter
 import pickle
 from functools import partial
-import models.vgg_128
+import models.vgg_128 as vgg
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--batch_size', default=100, type=int, help='batch size')
@@ -61,8 +61,8 @@ tmp = torch.load(opt.model_path, map_location=lambda storage, loc: storage, pick
 encoder_ckpt = torch.load("pretrained_models/svglp_bair_enc.pth")
 decoder_ckpt = torch.load("pretrained_models/svglp_bair_dec.pth")
 
-encoder = vgg_128.encoder(128)
-decoder = vgg_128.decoder(128)
+encoder = vgg.encoder(128)
+decoder = vgg.decoder(128)
 
 encoder.load_state_dict(encoder_ckpt)
 decoder.load_state_dict(decoder_ckpt)
