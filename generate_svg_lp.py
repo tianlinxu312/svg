@@ -77,7 +77,6 @@ except Exception as e:
     torch.save(encoder.module.features.state_dict(), "pretrained_models/svglp_bair_enc.pth")
     torch.save(decoder.state_dict(), "pretrained_models/svglp_bair_dec.pth")
 
-
 '''
 for i, (name, module) in enumerate(encoder._modules.items()):
     module = recursion_change_bn(module)
