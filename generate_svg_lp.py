@@ -11,6 +11,7 @@ import itertools
 import progressbar
 import numpy as np
 from scipy.ndimage.filters import gaussian_filter
+import pickle
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--batch_size', default=100, type=int, help='batch size')
@@ -49,24 +50,46 @@ def recursion_change_bn(module):
 
 
 # ---------------- load the models  ----------------
-tmp = torch.load(opt.model_path)
+pickle.load = partial(pickle.load, encoding="latin1")
+pickle.Unpickler = partial(pickle.Unpickler, encoding="latin1")
+
+tmp = torch.load(opt.model_path, map_location=lambda storage, loc: storage, pickle_module=pickle)
+
+encoder = tmp['encoder']
+decoder = tmp['decoder']
+
+# tmp = torch.load(opt.model_path)
 frame_predictor = tmp['frame_predictor']
 posterior = tmp['posterior']
 prior = tmp['prior']
 frame_predictor.eval()
 prior.eval()
 posterior.eval()
-encoder = tmp['encoder']
-decoder = tmp['decoder']
+# encoder = tmp['encoder']
+# decoder = tmp['decoder']
 
+try:
+    torch.save(encoder.state_dict(), "pretrained_models/svglp_bair_enc.pth")
+    torch.save(decoder.state_dict(), "pretrained_models/svglp_bair_dec.pth")
+except Exception as e:
+    print(e)
+    torch.save(encoder.module.features.state_dict(), "pretrained_models/svglp_bair_enc.pth")
+    torch.save(decoder.state_dict(), "pretrained_models/svglp_bair_dec.pth")
+
+
+'''
 for i, (name, module) in enumerate(encoder._modules.items()):
     module = recursion_change_bn(module)
 
 for i, (name, module) in enumerate(decoder._modules.items()):
     module = recursion_change_bn(module)
-
+    
 encoder.train()
 decoder.train()
+'''
+encoder.eval()
+decoder.eval()
+
 frame_predictor.batch_size = opt.batch_size
 posterior.batch_size = opt.batch_size
 prior.batch_size = opt.batch_size
