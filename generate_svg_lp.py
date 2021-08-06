@@ -13,20 +13,16 @@ import numpy as np
 from scipy.ndimage.filters import gaussian_filter
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--batch_size', default=8, type=int, help='batch size')
-parser.add_argument('--data_root', default='../data/mmnist', help='root directory for data')
+parser.add_argument('--batch_size', default=100, type=int, help='batch size')
+parser.add_argument('--data_root', default='data', help='root directory for data')
 parser.add_argument('--model_path', default='', help='path to model')
-parser.add_argument('--log_dir', default='./ckpts', help='directory to save generations to')
+parser.add_argument('--log_dir', default='', help='directory to save generations to')
 parser.add_argument('--seed', default=1, type=int, help='manual seed')
-parser.add_argument('--n_past', type=int, default=10, help='number of frames to condition on')
-parser.add_argument('--n_future', type=int, default=10, help='number of frames to predict')
+parser.add_argument('--n_past', type=int, default=2, help='number of frames to condition on')
+parser.add_argument('--n_future', type=int, default=28, help='number of frames to predict')
 parser.add_argument('--num_threads', type=int, default=0, help='number of data loading threads')
 parser.add_argument('--nsample', type=int, default=100, help='number of samples')
 parser.add_argument('--N', type=int, default=256, help='number of samples')
-parser.add_argument('--dataset', type=str, default='kth', help='choice of dataset')
-parser.add_argument('--last_frame_skip', type=bool, default=False)
-parser.add_argument('--channels', type=int, default=1)
-parser.add_argument('--image_width', type=int, default=64)
 
 
 opt = parser.parse_args()
@@ -38,14 +34,13 @@ opt.max_step = opt.n_eval
 
 print("Random Seed: ", opt.seed)
 random.seed(opt.seed)
-#torch.manual_seed(opt.seed)
-#torch.cuda.manual_seed_all(opt.seed)
-#dtype = torch.cuda.FloatTensor
+torch.manual_seed(opt.seed)
+torch.cuda.manual_seed_all(opt.seed)
+dtype = torch.cuda.FloatTensor
 
 
 
 # ---------------- load the models  ----------------
-'''
 tmp = torch.load(opt.model_path)
 frame_predictor = tmp['frame_predictor']
 posterior = tmp['posterior']
@@ -64,24 +59,24 @@ opt.g_dim = tmp['opt'].g_dim
 opt.z_dim = tmp['opt'].z_dim
 opt.num_digits = tmp['opt'].num_digits
 
-
 # --------- transfer to gpu ------------------------------------
 frame_predictor.cuda()
 posterior.cuda()
 prior.cuda()
 encoder.cuda()
 decoder.cuda()
-'''
+
 # ---------------- set the options ----------------
-# opt.dataset = tmp['opt'].dataset
-opt.last_frame_skip = opt.last_frame_skip
-opt.channels = opt.channels
-opt.image_width = opt.image_width
+opt.dataset = tmp['opt'].dataset
+opt.last_frame_skip = tmp['opt'].last_frame_skip
+opt.channels = tmp['opt'].channels
+opt.image_width = tmp['opt'].image_width
 
 print(opt)
 
+
 # --------- load a dataset ------------------------------------
-train_data = utils.load_dataset(opt)
+train_data, test_data = utils.load_dataset(opt)
 
 train_loader = DataLoader(train_data,
                           num_workers=opt.num_threads,
@@ -89,6 +84,12 @@ train_loader = DataLoader(train_data,
                           shuffle=True,
                           drop_last=True,
                           pin_memory=True)
+test_loader = DataLoader(test_data,
+                         num_workers=opt.num_threads,
+                         batch_size=opt.batch_size,
+                         shuffle=True,
+                         drop_last=True,
+                         pin_memory=True)
 
 def get_training_batch():
     while True:

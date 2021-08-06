@@ -10,33 +10,37 @@ import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import functools
-#from skimage.measure import compare_psnr as psnr_metric
-#from skimage.measure import compare_ssim as ssim_metric
+from skimage.measure import compare_psnr as psnr_metric
+from skimage.measure import compare_ssim as ssim_metric
 from scipy import signal
 from scipy import ndimage
 from PIL import Image, ImageDraw
+
+
 from torchvision import datasets, transforms
 from torch.autograd import Variable
 import imageio
 
-hostname = socket.gethostname()
-if torch.cuda.is_available():
-    use_cuda = True
-    dtype = torch.cuda.FloatTensor
-else:
-    use_cuda = False
-    dtype = torch.FloatTensor
 
+hostname = socket.gethostname()
 
 def load_dataset(opt):
-    if opt.dataset == 'mmnist':
+    if opt.dataset == 'smmnist':
         from data.moving_mnist import MovingMNIST
         train_data = MovingMNIST(
                 train=True,
                 data_root=opt.data_root,
                 seq_len=opt.n_past+opt.n_future,
                 image_size=opt.image_width,
-                deterministic=False)
+                deterministic=False,
+                num_digits=opt.num_digits)
+        test_data = MovingMNIST(
+                train=False,
+                data_root=opt.data_root,
+                seq_len=opt.n_eval,
+                image_size=opt.image_width,
+                deterministic=False,
+                num_digits=opt.num_digits)
     elif opt.dataset == 'bair':
         from data.bair import RobotPush 
         train_data = RobotPush(
@@ -44,22 +48,31 @@ def load_dataset(opt):
                 train=True,
                 seq_len=opt.n_past+opt.n_future,
                 image_size=opt.image_width)
+        test_data = RobotPush(
+                data_root=opt.data_root,
+                train=False,
+                seq_len=opt.n_eval,
+                image_size=opt.image_width)
     elif opt.dataset == 'kth':
         from data.kth import KTH 
-        train_data = KTH(train=True, data_root=opt.data_root, seq_len=opt.n_past+opt.n_future,
-                         image_size=opt.image_width)
-    elif opt.dataset == 'mazes':
-        from data.mazes import Mazes
-        train_data = Mazes(data_root='../data/mazes/np_mazes_train.npy')
-    return train_data
-
+        train_data = KTH(
+                train=True, 
+                data_root=opt.data_root,
+                seq_len=opt.n_past+opt.n_future, 
+                image_size=opt.image_width)
+        test_data = KTH(
+                train=False, 
+                data_root=opt.data_root,
+                seq_len=opt.n_eval, 
+                image_size=opt.image_width)
+    
+    return train_data, test_data
 
 def sequence_input(seq, dtype):
     return [Variable(x.type(dtype)) for x in seq]
 
-
 def normalize_data(opt, dtype, sequence):
-    if opt.dataset == 'mmnist' or opt.dataset == 'kth' or opt.dataset == 'mazes':
+    if opt.dataset == 'smmnist' or opt.dataset == 'kth' or opt.dataset == 'bair' :
         sequence.transpose_(0, 1)
         sequence.transpose_(3, 4).transpose_(2, 3)
     else:
@@ -73,7 +86,6 @@ def is_sequence(arg):
             not hasattr(arg, "dot") and
             (hasattr(arg, "__getitem__") or
             hasattr(arg, "__iter__")))
-
 
 def image_tensor(inputs, padding=1):
     # assert is_sequence(inputs)
