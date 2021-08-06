@@ -41,38 +41,41 @@ torch.cuda.manual_seed_all(opt.seed)
 dtype = torch.cuda.FloatTensor
 
 
-def recursion_change_bn(module):
-    if isinstance(module, torch.nn.BatchNorm2d):
-        module.track_running_stats = 1
-    else:
-        for i, (name, module1) in enumerate(module._modules.items()):
-            module1 = recursion_change_bn(module1)
-    return module
-
-
 # ---------------- load the models  ----------------
 pickle.load = partial(pickle.load, encoding="latin1")
 pickle.Unpickler = partial(pickle.Unpickler, encoding="latin1")
 
 tmp = torch.load(opt.model_path, map_location=lambda storage, loc: storage, pickle_module=pickle)
 
-# encoder = torch.load("pretrained_models/svglp_bair_enc_model.pth")
-# decoder = torch.load("pretrained_models/svglp_bair_dec_model.pth")
-
 
 opt.g_dim = tmp['opt'].g_dim
 opt.z_dim = tmp['opt'].z_dim
 opt.num_digits = tmp['opt'].num_digits
 
-encoder_ckpt = torch.load("pretrained_models/svglp_bair_enc.pth")
-decoder_ckpt = torch.load("pretrained_models/svglp_bair_dec.pth")
+# pretrained_dict = ...
+pre_encoder_ckpt = torch.load("pretrained_models/svglp_bair_enc.pth")
+pre_decoder_ckpt = torch.load("pretrained_models/svglp_bair_dec.pth")
 
+# model_dict = model.state_dict()
 encoder = vgg.encoder(opt.g_dim, 3)
 decoder = vgg.decoder(opt.g_dim, 3)
 
-encoder.load_state_dict(encoder_ckpt)
-decoder.load_state_dict(decoder_ckpt)
+encoder_dict = encoder.state_dict()
+decoder_dict = decoder.state_dict()
 
+# 1. filter out unnecessary keys
+pre_encoder_ckpt = {k: v for k, v in pre_encoder_ckpt.items() if k in encoder_dict}
+pre_decoder_ckpt = {k: v for k, v in pre_decoder_ckpt.items() if k in decoder_dict}
+
+pre_encoder_ckpt = {k: 80000 for k, v in encoder_dict.items() if k not in pre_encoder_ckpt}
+pre_decoder_ckpt = {k: 80000 for k, v in decoder_dict.items() if k in pre_decoder_ckpt}
+
+# 2. overwrite entries in the existing state dict
+encoder_dict.update(pre_encoder_ckpt)
+decoder_dict.update(pre_decoder_ckpt)
+# 3. load the new state dict
+encoder.load_state_dict(pre_encoder_ckpt)
+decoder.load_state_dict(pre_decoder_ckpt)
 
 frame_predictor = tmp['frame_predictor']
 posterior = tmp['posterior']
