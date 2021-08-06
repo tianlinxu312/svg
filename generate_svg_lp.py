@@ -44,7 +44,7 @@ def recursion_change_bn(module):
         module.track_running_stats = 1
     else:
         for i, (name, module1) in enumerate(module._modules.items()):
-            module = recursion_change_bn(module1)
+            module1 = recursion_change_bn(module1)
     return module
 
 
@@ -60,10 +60,10 @@ encoder = tmp['encoder']
 decoder = tmp['decoder']
 
 for i, (name, module) in enumerate(encoder._modules.items()):
-    module = recursion_change_bn(encoder)
+    module = recursion_change_bn(module)
 
 for i, (name, module) in enumerate(decoder._modules.items()):
-    module = recursion_change_bn(decoder)
+    module = recursion_change_bn(module)
 
 encoder.train()
 decoder.train()
