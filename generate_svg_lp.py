@@ -64,8 +64,8 @@ opt.num_digits = tmp['opt'].num_digits
 encoder_ckpt = torch.load("pretrained_models/svglp_bair_enc.pth")
 decoder_ckpt = torch.load("pretrained_models/svglp_bair_dec.pth")
 
-encoder = vgg.encoder(opt.g_dim)
-decoder = vgg.decoder(opt.g_dim)
+encoder = vgg.encoder(opt.g_dim, 3)
+decoder = vgg.decoder(opt.g_dim, 3)
 
 encoder.load_state_dict(encoder_ckpt)
 decoder.load_state_dict(decoder_ckpt)
