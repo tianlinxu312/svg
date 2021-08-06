@@ -13,7 +13,7 @@ import numpy as np
 from scipy.ndimage.filters import gaussian_filter
 import pickle
 from functools import partial
-import vgg_128
+import model.vgg_128
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--batch_size', default=100, type=int, help='batch size')
