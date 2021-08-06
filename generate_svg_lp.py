@@ -13,7 +13,7 @@ import numpy as np
 from scipy.ndimage.filters import gaussian_filter
 import pickle
 from functools import partial
-import models.vgg_128 as vgg
+import models.vgg_64 as vgg
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--batch_size', default=100, type=int, help='batch size')
@@ -30,7 +30,6 @@ parser.add_argument('--N', type=int, default=256, help='number of samples')
 
 opt = parser.parse_args()
 os.makedirs('%s' % opt.log_dir, exist_ok=True)
-
 
 opt.n_eval = opt.n_past+opt.n_future
 opt.max_step = opt.n_eval
@@ -57,12 +56,16 @@ pickle.Unpickler = partial(pickle.Unpickler, encoding="latin1")
 
 tmp = torch.load(opt.model_path, map_location=lambda storage, loc: storage, pickle_module=pickle)
 
+opt.g_dim = tmp['opt'].g_dim
+opt.z_dim = tmp['opt'].z_dim
+opt.num_digits = tmp['opt'].num_digits
+
 
 encoder_ckpt = torch.load("pretrained_models/svglp_bair_enc.pth")
 decoder_ckpt = torch.load("pretrained_models/svglp_bair_dec.pth")
 
-encoder = vgg.encoder(128)
-decoder = vgg.decoder(128)
+encoder = vgg.encoder(opt.g_dim)
+decoder = vgg.decoder(opt.g_dim)
 
 encoder.load_state_dict(encoder_ckpt)
 decoder.load_state_dict(decoder_ckpt)
@@ -103,10 +106,6 @@ decoder.eval()
 frame_predictor.batch_size = opt.batch_size
 posterior.batch_size = opt.batch_size
 prior.batch_size = opt.batch_size
-opt.g_dim = tmp['opt'].g_dim
-opt.z_dim = tmp['opt'].z_dim
-opt.num_digits = tmp['opt'].num_digits
-
 # --------- transfer to gpu ------------------------------------
 frame_predictor.cuda()
 posterior.cuda()
