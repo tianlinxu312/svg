@@ -13,6 +13,7 @@ import numpy as np
 from scipy.ndimage.filters import gaussian_filter
 import pickle
 from functools import partial
+import vgg_128
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--batch_size', default=100, type=int, help='batch size')
@@ -57,8 +58,15 @@ pickle.Unpickler = partial(pickle.Unpickler, encoding="latin1")
 tmp = torch.load(opt.model_path, map_location=lambda storage, loc: storage, pickle_module=pickle)
 
 
-encoder = torch.load("pretrained_models/svglp_bair_enc.pth")
-decoder = torch.load("pretrained_models/svglp_bair_dec.pth")
+encoder_ckpt = torch.load("pretrained_models/svglp_bair_enc.pth")
+decoder_ckpt = torch.load("pretrained_models/svglp_bair_dec.pth")
+
+encoder = vgg_128.encoder(128)
+decoder = vgg_128.decoder(128)
+
+encoder.load_state_dict(encoder_ckpt)
+decoder.load_state_dict(decoder_ckpt)
+
 frame_predictor = tmp['frame_predictor']
 posterior = tmp['posterior']
 prior = tmp['prior']
