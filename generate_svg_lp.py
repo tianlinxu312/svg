@@ -53,8 +53,8 @@ opt.z_dim = tmp['opt'].z_dim
 opt.num_digits = tmp['opt'].num_digits
 
 # pretrained_dict = ...
-pre_encoder_ckpt = torch.load("pretrained_models/svglp_bair_enc.pth", strict=False)
-pre_decoder_ckpt = torch.load("pretrained_models/svglp_bair_dec.pth", strict=False)
+pre_encoder_ckpt = torch.load("pretrained_models/svglp_bair_enc.pth")
+pre_decoder_ckpt = torch.load("pretrained_models/svglp_bair_dec.pth")
 
 # model_dict = model.state_dict()
 encoder = vgg.encoder(opt.g_dim, 3)
@@ -77,8 +77,8 @@ decoder_dict.update(pre_decoder_ckpt)
 '''
 
 # 3. load the new state dict
-encoder.load_state_dict(pre_encoder_ckpt)
-decoder.load_state_dict(pre_decoder_ckpt)
+encoder.load_state_dict(pre_encoder_ckpt, strict=False)
+decoder.load_state_dict(pre_decoder_ckpt, strict=False)
 
 frame_predictor = tmp['frame_predictor']
 posterior = tmp['posterior']
