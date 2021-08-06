@@ -36,7 +36,11 @@ enc_values = encoder.state_dict()
 dec_values = decoder.state_dict()
 
 for key, value in enc_values.items():
-    print(key)
+    print("encoder keys: ", key)
+
+
+for key, value in dec_values.items():
+    print("decoder keys: ", key)
 
 # encoder = torch.load("pretrained_models/svglp_bair_enc_model.pth")
 # decoder = torch.load("pretrained_models/svglp_bair_dec_model.pth")
