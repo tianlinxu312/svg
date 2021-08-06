@@ -39,6 +39,14 @@ torch.cuda.manual_seed_all(opt.seed)
 dtype = torch.cuda.FloatTensor
 
 
+def recursion_change_bn(module):
+    if isinstance(module, torch.nn.BatchNorm2d):
+        module.track_running_stats = 1
+    else:
+        for i, (name, module1) in enumerate(module._modules.items()):
+            module1 = recursion_change_bn(module1)
+    return module
+
 
 # ---------------- load the models  ----------------
 tmp = torch.load(opt.model_path)
@@ -50,6 +58,16 @@ prior.eval()
 posterior.eval()
 encoder = tmp['encoder']
 decoder = tmp['decoder']
+
+for i, (name, module) in enumerate(encoder._modules.items()):
+    module = recursion_change_bn(encoder)
+encoder.eval()
+
+for i, (name, module) in enumerate(decoder._modules.items()):
+    module = recursion_change_bn(decoder)
+decoder.eval()
+
+
 encoder.train()
 decoder.train()
 frame_predictor.batch_size = opt.batch_size
