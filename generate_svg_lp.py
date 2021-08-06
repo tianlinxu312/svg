@@ -12,6 +12,7 @@ import progressbar
 import numpy as np
 from scipy.ndimage.filters import gaussian_filter
 import pickle
+from functools import partial
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--batch_size', default=100, type=int, help='batch size')
